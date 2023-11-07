@@ -1,0 +1,21 @@
+.form-control{
+  border: .0625rem solid rgba(185, 185, 185, 0.7) !important;
+}
+
+table.xtable.no-footer {
+  border-bottom: 0 !important;
+}
+
+table.xtable.no-footer  {
+  padding-top:20px;
+  padding-bottom:20px;
+}
+
+.money{
+	text-align:right;
+}
+
+.money:before{
+	content:'Rp.';	
+	float:left;
+}
