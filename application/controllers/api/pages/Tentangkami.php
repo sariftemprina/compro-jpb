@@ -44,17 +44,6 @@ class Tentangkami extends REST_Controller
 			'image' => base_url().$contains['%visiimg%']
 		];
 
-		// get penghargaan
-		$this->db->select('*');
-		$this->db->from('images');
-		$this->db->where(['deleted_at'=>null, 'type'=>'achievement']);
-		$query_penghargaans	= $this->db->get();
-
-		$penghargaans = [];
-		foreach ($query_penghargaans->result_array() as $penghargaan) {
-			$penghargaans[] = ['image'=>base_url().$penghargaan['filepath']];
-		}
-
 		// get struktur organisasi
 		$this->db->select('*');
 		$this->db->from('person');
@@ -85,7 +74,6 @@ class Tentangkami extends REST_Controller
 		$data = [
 			'profile' => $profile,
 			'visimisi' => $visimisi,
-			'penghargaans' => $penghargaans,
 			'persons' => $persons
 		];
 
