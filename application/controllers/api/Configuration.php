@@ -74,7 +74,7 @@ class Configuration extends REST_Controller
 
 			'social_media' => $socmeds,
 			'marketplace' => $marketplace,
-			'not_found_image' => base_url().'files/upload/404.png",
+			'not_found_image' => base_url().'files/upload/404.png',
 			'console_status' => '[CahayaQuran] API terhubung :D'
 		];
 
