@@ -837,7 +837,7 @@ class Administrator extends CI_Controller {
 		}
 
 		if($this->input->get('get') == 'data'){
-			$this->db->select(['product.id','product.title','product.description','product.category','product.published','product.price','product.created_at', 'product_images.data as images', 'product_stores.data as stores']);
+			$this->db->select(['product.id','product.title','product.description','product.category','product.popular','product.published','product.price','product.created_at', 'product_images.data as images', 'product_stores.data as stores']);
 			$this->db->from('product');
 			$this->db->join("(SELECT CONCAT('[', GROUP_CONCAT((JSON_OBJECT('id', images.id, 'caption', images.caption, 'filepath', images.filepath))), ']') as data, product_id from product_images left join images on images.id = product_images.image_id where images.deleted_at is null and product_images.deleted_at is null group by product_id) product_images", 'product.id = product_images.product_id', 'left');
 			$this->db->join("(SELECT CONCAT('[', GROUP_CONCAT((JSON_OBJECT('store', product_stores.name, 'link', product_stores.link))), ']') as data, product_id from product_stores where deleted_at is null group by product_id) product_stores", 'product.id = product_stores.product_id', 'left');
@@ -894,6 +894,7 @@ class Administrator extends CI_Controller {
 			$update_product['description']	= $this->input->post('description');
 			$update_product['price']		= $this->input->post('price');
 			$update_product['published']	= $this->input->post('published');
+			$update_product['popular']		= $this->input->post('popular');
 			$update_product['category']		= $this->input->post('category');
 			$this->db->update('product', $update_product, ['id' => $product_id]);
 
@@ -962,6 +963,7 @@ class Administrator extends CI_Controller {
 			$update_product['description']	= $this->input->post('description');
 			$update_product['price']		= $this->input->post('price');
 			$update_product['published']	= $this->input->post('published');
+			$update_product['popular']		= $this->input->post('popular');
 			$update_product['category']		= $this->input->post('category');
 			$this->db->insert('product', $update_product);
 			$product_id	= $this->db->insert_id();
