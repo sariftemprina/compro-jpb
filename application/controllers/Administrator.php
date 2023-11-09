@@ -239,6 +239,7 @@ class Administrator extends CI_Controller {
 			}
 
 			$input['socmed']	= json_encode($this->input->post('socmed'));
+			$input['stores']	= json_encode($this->input->post('stores'));
 
 			foreach($input as $k => $v){
 				$where['code']		= "%{$k}%";
@@ -334,7 +335,7 @@ class Administrator extends CI_Controller {
 		/* Company */
 		if($this->input->get('do') == 'save-company'){
 			$this->form_validation->set_rules('name', 'Nama Perusahaan', 'required');		
-			$this->form_validation->set_rules('building', 'Gedung', 'required');		
+			// $this->form_validation->set_rules('building', 'Gedung', 'required');		
 			$this->form_validation->set_rules('address', 'Alamat', 'required');			
 
 			if($this->form_validation->run() == false){
@@ -373,11 +374,17 @@ class Administrator extends CI_Controller {
 			}
 
 			$set_company['name']		= $this->input->post('name');
-			$set_company['building']		= $this->input->post('building');
+			$set_company['building']	= $this->input->post('building');
 			$set_company['address']		= $this->input->post('address');
 			$set_company['contacts']	= json_encode($this->input->post('contacts'));
 			$set_company['email']		= $this->input->post('email');
 			$set_company['maps']		= $this->input->post('maps');
+			$set_company['hq']			= $this->input->post('hq');
+			$set_company['office_hour']	= nl2br($this->input->post('office_hour'));
+
+			if($set_company['hq'] == '1'){
+				$this->db->update('companies', ['hq' => 0], ['hq' => 1]);
+			}
 
 			if($images){
 				$set_company['images']		= json_encode($images);
@@ -386,11 +393,12 @@ class Administrator extends CI_Controller {
 			if($this->input->get('id')){
 				$company = $this->db->get_where('companies', ['id' => $this->input->get('id')]);
 				$this->db->update('companies', $set_company, ['id' => $this->input->get('id')]);
+				echo json_encode(['status' => true, 'msg' => 'berhasil merubah kontak perusahaan']);
 			}else{
 				$this->db->insert('companies', $set_company);
+				echo json_encode(['status' => true, 'msg' => 'berhasil menambah kontak perusahaan']);
 			}
 
-			echo json_encode(['status' => true, 'msg' => 'berhasil menambahkan kontak perusahaan']);
 			return false;
 		}
 

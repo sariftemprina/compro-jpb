@@ -60,9 +60,24 @@
 										$socmed	= ['facebook', 'youtube', 'instagram', 'twitter-x', 'tiktok'];
 										foreach($socmed as $v){
 									?>
-									<div class="input-group mb-2">
+									<div class="input-group mb-2 row-socmed">
 										<span class="input-group-text bg-dark" style="width:150px" id="basic-addon3"><?php echo ucwords($v); ?></span>
 										<input type="text" class="form-control socmed" id="basic-url" name="<?php echo $v; ?>" aria-describedby="basic-addon3 basic-addon4">
+										<button type="button" title="delete" class="btn btn-sm btn-danger btn-delete"><i class="bi bi-x-lg"></i></button>
+									</div>
+									<?php
+										}
+									?>
+								</div>
+								<div class="mb-3">
+								<label for="basic-url" class="form-label">Link Official Store</label>
+									<?php
+										$stores	= ['shopee','tokopedia', 'blibli'];
+										foreach($stores as $v){
+									?>
+									<div class="input-group mb-2 row-stores">
+										<span class="input-group-text bg-dark" style="width:150px" id="basic-addon3"><?php echo ucwords($v); ?></span>
+										<input type="text" class="form-control stores" id="basic-url" name="<?php echo $v; ?>" aria-describedby="basic-addon3 basic-addon4">
 										<button type="button" title="delete" class="btn btn-sm btn-danger btn-delete"><i class="bi bi-x-lg"></i></button>
 									</div>
 									<?php
@@ -148,7 +163,7 @@
 										<tr>
 											<th style="width:200px">Nama</th>
 											<th>Alamat</th>
-											<th>Email</th>
+											<th>HQ</th>
 											<th>Maps</th>
 											<th>Created at</th>
 											<th style="width:220px"><i class="bi bi-three-dots"></i></th>
@@ -167,16 +182,12 @@
 									<input type="text" class="form-control form-control-sm" id="" name="company-name" aria-describedby="">
 								</div>
 								<div class="mb-3">
-									<label for="" class="form-label">Gedung</label>
-									<input type="text" class="form-control form-control-sm" id="" name="company-building" aria-describedby="">
-								</div>
-								<div class="mb-3">
 									<label for="" class="form-label">Alamat </label>
 									<textarea class="form-control form-control-sm" id="" name="company-address" aria-describedby=""></textarea>
 								</div>
 								<div class="mb-3">
-									<label for="" class="form-label">Email </label>
-									<input type="text" class="form-control" id="" name="company-email" aria-describedby="">
+									<label for="" class="form-label">Office Hour </label>
+									<textarea class="form-control form-control-sm" id="" name="company-office_hour" aria-describedby="" rows="5" placeholder="Senin-Jumat : 09:00"></textarea>
 								</div>
 								<div class="">
 									<label for="" class="form-label">Kontak </label>
@@ -187,6 +198,8 @@
 												<option value="">-Pilih-</option>
 												<option value="whatsapp">WA</option>
 												<option value="telephone">Telp</option>
+												<option value="fax">Fax</option>
+												<option value="email">Email</option>
 											</select>
 										</div>
 										<div class="col-md-5">
@@ -201,6 +214,12 @@
 								<div class="mb-3">
 									<label for="" class="form-label">Link Map</label>
 									<input type="text" class="form-control" id="" name="company-maps" aria-describedby="">
+								</div>
+								<div class="mb-3">
+									<div class="form-check form-switch">
+										<input class="form-check-input" name="company-hq" type="checkbox" role="switch" id="flexSwitchCheckChecked" value="1">
+										<label class="form-check-label" for="flexSwitchCheckChecked">Tandai Sebagai Kantor Pusat</label>
+									</div>
 								</div>
 								<div class="mb-3">
 									<button class="btn btn-sm btn-primary btn-submit" type="button">Simpan Pengaturan Kontak</button>
@@ -397,6 +416,11 @@
 						$.each(socmed, function(k1,v1){
 							$(".socmed[name='"+v1.name+"']").val(v1.value);
 						});
+					}else if(v.code == '%stores%'){
+						let stores = JSON.parse(v.value);
+						$.each(stores, function(k1,v1){
+							$(".stores[name='"+v1.name+"']").val(v1.value);
+						});
 					}
 
 					if($('#' + (v.code).replace(/\%/g, '')).hasClass('tiny')){
@@ -449,7 +473,7 @@
 					company_list += `<tr>
 								<td>${v.name}</td>
 								<td>${v.address}</td>
-								<td>${v.email}</td>
+								<td class="text-center">${(v.hq == '0' ? '<i class="bi bi-x text-danger fw-bold"></i>' : '<i class="bi bi-check2 text-success fw-bold"></i>')}</td>
 								<td class="text-center">${(v.maps == '' ? '<i class="bi bi-x text-danger fw-bold"></i>' : '<i class="bi bi-check2 text-success fw-bold"></i>')}</td>
 								<td>${v.created_at}</td>
 								<td>
@@ -461,7 +485,7 @@
 
 				if(x.result.companies.length == 0){
 					company_list += `<tr>
-								<td colspan="7" class="text-center">Tidak ada data</td>
+								<td colspan="8" class="text-center">Tidak ada data</td>
 							</tr>`;
 				}
 				$("#table-companies tbody").html(company_list);
@@ -471,12 +495,23 @@
 		});
 	}
 
-    $(document).on('click', 'form#site .btn-delete', function(){
+    $(document).on('click', 'form#site .row-socmed .btn-delete', function(){
 		console.log($(this).closest('.input-group').find('.socmed'));
 		if($(this).closest('.input-group').find('.socmed').val() !== ''){
 			$("#appModal").modal('show');
 			$("#appModal .modal-title").html(`<i class="bi bi-exclamation-triangle-fill text-info fs-1"></i> Informasi`);
 	        $("#appModal .modal-body").html(`Menghapus link sosial media tidak akan tersimpan selama belum menekan tombol simpan`);
+	        $("#appModal .modal-footer").html(`<a class="btn btn-sm btn-light" data-bs-dismiss="modal">Saya Mengerti</a>`);
+			$(this).closest('.input-group').find('.socmed').val('');
+		}
+	});
+
+	$(document).on('click', 'form#site .row-stores .btn-delete', function(){
+		console.log($(this).closest('.input-group').find('.socmed'));
+		if($(this).closest('.input-group').find('.socmed').val() !== ''){
+			$("#appModal").modal('show');
+			$("#appModal .modal-title").html(`<i class="bi bi-exclamation-triangle-fill text-info fs-1"></i> Informasi`);
+	        $("#appModal .modal-body").html(`Menghapus link toko tidak akan tersimpan selama belum menekan tombol simpan`);
 	        $("#appModal .modal-footer").html(`<a class="btn btn-sm btn-light" data-bs-dismiss="modal">Saya Mengerti</a>`);
 			$(this).closest('.input-group').find('.socmed').val('');
 		}
@@ -568,6 +603,7 @@
 					$('[name=company-address]').val(v.address);
 					$('[name=company-email]').val(v.email);
 					$('[name=company-maps]').val(v.maps);
+					$('[name=company-hq]').attr('checked', (v.hq == '0' ? false : true));
 					$.each(JSON.parse(v.contacts), function(k1,v1){
 						$(".company-contact").eq(k1).val(v1.name);
 						$(".company-phone").eq(k1).val(v1.value);
@@ -609,13 +645,15 @@
 			images.push({'name' : v.name, 'value' : v.value});
 		});
 
-		param.name		= $("[name=company-name]").val();
-		param.building	= $("[name=company-building]").val();
-		param.address	= $("[name=company-address]").val();
-		param.contacts	= contacts;
-		param.email		= $("[name=company-email]").val();
-		param.maps		= $("[name=company-maps]").val();
-		param.images	= images;
+		param.name			= $("[name=company-name]").val();
+		param.building		= $("[name=company-building]").val();
+		param.address		= $("[name=company-address]").val();
+		param.contacts		= contacts;
+		param.email			= $("[name=company-email]").val();
+		param.maps			= $("[name=company-maps]").val();
+		param.hq			= $("[name=company-hq]").val();
+		param.office_hour	= $("[name=company-office_hour]").val();
+		param.images		= images;
 
         $.post($("form#company").attr('action'), param, function(result){
 			var x = JSON.parse(result);
@@ -657,6 +695,7 @@
 		param.description	= $("[name=description]").val();
 		param.logo	= $("[name=img-base64-logo]").val();
 		param.socmed	= $(".socmed").serializeArray();
+		param.stores	= $(".stores").serializeArray();
 
         $.post('?do=save-site', param, function(result){
 			var x = JSON.parse(result);
