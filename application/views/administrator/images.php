@@ -31,9 +31,7 @@
 				<label for="" class="form-label">Jenis</label>
 				<select class="form-control form-control-sm" name="input-type">
 					<option value="slide">Slide</option>
-					<option value="partner">Partner</option>
-					<option value="banner">Banner</option>
-					<option value="achievement">Achievement</option>
+					<option value="kategori">Kategori</option>
 				</select>
 			</div>
         </div>
@@ -45,13 +43,7 @@
                 <button class="nav-link active" id="slide" data-bs-toggle="tab" data-bs-target="#slide-tab-pane" type="button" role="tab" aria-controls="slide-tab-pane" aria-selected="true">Slide</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="partner" data-bs-toggle="tab" data-bs-target="#partner-tab-pane" type="button" role="tab" aria-controls="partner-tab-pane" aria-selected="false">Partner</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="banner" data-bs-toggle="tab" data-bs-target="#banner-tab-pane" type="button" role="tab" aria-controls="banner-tab-pane" aria-selected="false">Banner</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="achievement" data-bs-toggle="tab" data-bs-target="#banner-tab-pane" type="button" role="tab" aria-controls="banner-tab-pane" aria-selected="false">Achievement</button>
+                <button class="nav-link" id="kategori" data-bs-toggle="tab" data-bs-target="#kategori-tab-pane" type="button" role="tab" aria-controls="kategori-tab-pane" aria-selected="false">Kategori</button>
             </li>
         </ul>
         <div class="tab-content mt-3" id="myTabContent">
