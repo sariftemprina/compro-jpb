@@ -30,19 +30,46 @@ class Configuration extends REST_Controller
 			$contains[$_contains['code']] = $_contains['value'];
 		}
 
-		// get kontak
-		$this->db->select('*');
-		$this->db->from('companies');
-		$this->db->where(['deleted_at'=>null]);
-		$this->db->order_by('id', 'ASC');
-		$query_companies	= $this->db->get();
-
 		$socmed =  json_decode($contains['%socmed%']);
 		$socmeds = [];
 		foreach ($socmed as $_socmed) {
 			if(!empty($_socmed->value)){
 				$socmeds[] = ['name'=>$_socmed->name,'value'=>$_socmed->value];
 			}
+		}
+
+		// get kontak
+		$this->db->select('*');
+		$this->db->from('companies');
+		$this->db->where(['deleted_at'=>null, 'hq'=>1]);
+		$this->db->order_by('id', 'ASC');
+		$com_query	= $this->db->get();
+		$com_row = $com_query->row();
+
+		if(isset($com_row)){
+			$c_address = $com_row->address;
+			$c_office_hour = $com_row->office_hour;
+			$c_maps = $com_row->maps;
+
+			$contacts = json_decode($com_row->contacts);
+			$contact = [];
+			$c_phone = "";
+			$c_fax = "";
+			$d_label = "";
+
+			foreach ($contacts as $d_contact) {
+
+				if($d_contact->name=='telephone'){
+					if(!empty($d_contact->label)){
+						$d_label = ' <em>('.$d_contact->label.')</em>';
+					}
+					$c_phone = $d_contact->value.$d_label;
+				}elseif($d_contact->name=='fax'){
+					$c_fax = $d_contact->value;
+				}
+			}
+		}else{
+			$c_address = $c_office_hour = $c_maps = $c_phone = $c_fax = "";
 		}
 
 		$marketplace = [
@@ -66,16 +93,16 @@ class Configuration extends REST_Controller
 			'meta_keywords' => $contains['%keywords%'],
 			'logo' => base_url().$contains['%logo%'],
 
-			'address' => 'Jl. Karah Agung No. 45 Karah <br>Kec. Jambangan - Surabaya <br>Jawa Timur 60232',
-	    'phone' => '031 - 828 9999 <em>(ext: 303)</em>',
-	    'fax' => '031 - 828 1004',
-	    'office_hour' => '<span>Senin - Sabtu:</span>  08.00 - 17.00 WIB',
-	    'google_map' => 'https://www.google.com/maps/embed/v1/place?key=AIzaSyCoo3U1bS1Xd5SMll4PyxuziUdVUElEYIQ&q=Jl.+Karah+Agung+I+No.45,+Karah,+Kec.+Jambangan,+Surabaya,+Jawa+Timur+60232',
+			'address' => $c_address,
+	    'phone' => $c_phone,
+	    'fax' => $c_fax,
+	    'office_hour' => $c_office_hour,
+	    'google_map' => $c_maps,
 
 			'social_media' => $socmeds,
 			'marketplace' => $marketplace,
 			'not_found_image' => base_url().'files/upload/404.png',
-			'console_status' => '[CahayaQuran] API terhubung :D'
+			'console_status' => '[JPbooks] API terhubung :D'
 		];
 
 		$response = [
