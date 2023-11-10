@@ -31,7 +31,8 @@
                                         <small class="text-secondary">${v.description}</small>
                                         <div class="d-flex justify-content-between border-top pt-2">
                                             <div class="me-2">
-                                                <small class="text-body-secondary">${(v.published == '0' ? '<span class="badge bg-secondary">Draft</span>' : '<span class="badge bg-success">Published</span>')} </small>
+                                                ${(v.published == '0' ? '<span class="badge bg-secondary">Draft</span>' : '<span class="badge bg-success">Published</span>')} 
+                                                ${(v.popular == '0' ? '' : '<span class="badge bg-danger">Popular</span>')} 
                                             </div>
                                             <div class="me-2">
                                                 <small title="tanggal dibuat" class="text-body-secondary text-muted"><i class="bi bi-clock"></i> ${v.created_at} </small>

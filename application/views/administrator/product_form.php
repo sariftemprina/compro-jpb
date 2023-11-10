@@ -53,8 +53,19 @@
 			<div class="col-md-6">
 				<label for="" class="form-label">Kategori</label>
 				<select class="form-control form-control-sm" name="category">
-					<option value="quran">Al Quran</option>
-					<option value="kitab">Kitab</option>
+				<?php
+					$category	= ['Guru', 'SD', 'SMP', 'SMA', 'Umum'];
+					foreach($category as $v){
+						echo "<option value='{$v}'>{$v}</option>";
+					}
+				?>
+				</select>
+			</div>
+			<div class="col-md-6">
+				<label for="" class="form-label">Populer</label>
+				<select class="form-control form-control-sm" name="popular">
+					<option value="0">Tidak</option>
+					<option value="1">Ya</option>
 				</select>
 			</div>
 		</div>

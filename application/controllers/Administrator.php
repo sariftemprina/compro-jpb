@@ -239,6 +239,7 @@ class Administrator extends CI_Controller {
 			}
 
 			$input['socmed']	= json_encode($this->input->post('socmed'));
+			$input['stores']	= json_encode($this->input->post('stores'));
 
 			foreach($input as $k => $v){
 				$where['code']		= "%{$k}%";
@@ -334,7 +335,7 @@ class Administrator extends CI_Controller {
 		/* Company */
 		if($this->input->get('do') == 'save-company'){
 			$this->form_validation->set_rules('name', 'Nama Perusahaan', 'required');		
-			$this->form_validation->set_rules('building', 'Gedung', 'required');		
+			// $this->form_validation->set_rules('building', 'Gedung', 'required');		
 			$this->form_validation->set_rules('address', 'Alamat', 'required');			
 
 			if($this->form_validation->run() == false){
@@ -373,11 +374,17 @@ class Administrator extends CI_Controller {
 			}
 
 			$set_company['name']		= $this->input->post('name');
-			$set_company['building']		= $this->input->post('building');
+			$set_company['building']	= $this->input->post('building');
 			$set_company['address']		= $this->input->post('address');
 			$set_company['contacts']	= json_encode($this->input->post('contacts'));
 			$set_company['email']		= $this->input->post('email');
 			$set_company['maps']		= $this->input->post('maps');
+			$set_company['hq']			= $this->input->post('hq');
+			$set_company['office_hour']	= nl2br($this->input->post('office_hour'));
+
+			if($set_company['hq'] == '1'){
+				$this->db->update('companies', ['hq' => 0], ['hq' => 1]);
+			}
 
 			if($images){
 				$set_company['images']		= json_encode($images);
@@ -386,11 +393,12 @@ class Administrator extends CI_Controller {
 			if($this->input->get('id')){
 				$company = $this->db->get_where('companies', ['id' => $this->input->get('id')]);
 				$this->db->update('companies', $set_company, ['id' => $this->input->get('id')]);
+				echo json_encode(['status' => true, 'msg' => 'berhasil merubah kontak perusahaan']);
 			}else{
 				$this->db->insert('companies', $set_company);
+				echo json_encode(['status' => true, 'msg' => 'berhasil menambah kontak perusahaan']);
 			}
 
-			echo json_encode(['status' => true, 'msg' => 'berhasil menambahkan kontak perusahaan']);
 			return false;
 		}
 
@@ -829,7 +837,7 @@ class Administrator extends CI_Controller {
 		}
 
 		if($this->input->get('get') == 'data'){
-			$this->db->select(['product.id','product.title','product.description','product.category','product.published','product.price','product.created_at', 'product_images.data as images', 'product_stores.data as stores']);
+			$this->db->select(['product.id','product.title','product.description','product.category','product.popular','product.published','product.price','product.created_at', 'product_images.data as images', 'product_stores.data as stores']);
 			$this->db->from('product');
 			$this->db->join("(SELECT CONCAT('[', GROUP_CONCAT((JSON_OBJECT('id', images.id, 'caption', images.caption, 'filepath', images.filepath))), ']') as data, product_id from product_images left join images on images.id = product_images.image_id where images.deleted_at is null and product_images.deleted_at is null group by product_id) product_images", 'product.id = product_images.product_id', 'left');
 			$this->db->join("(SELECT CONCAT('[', GROUP_CONCAT((JSON_OBJECT('store', product_stores.name, 'link', product_stores.link))), ']') as data, product_id from product_stores where deleted_at is null group by product_id) product_stores", 'product.id = product_stores.product_id', 'left');
@@ -886,6 +894,7 @@ class Administrator extends CI_Controller {
 			$update_product['description']	= $this->input->post('description');
 			$update_product['price']		= $this->input->post('price');
 			$update_product['published']	= $this->input->post('published');
+			$update_product['popular']		= $this->input->post('popular');
 			$update_product['category']		= $this->input->post('category');
 			$this->db->update('product', $update_product, ['id' => $product_id]);
 
@@ -954,6 +963,7 @@ class Administrator extends CI_Controller {
 			$update_product['description']	= $this->input->post('description');
 			$update_product['price']		= $this->input->post('price');
 			$update_product['published']	= $this->input->post('published');
+			$update_product['popular']		= $this->input->post('popular');
 			$update_product['category']		= $this->input->post('category');
 			$this->db->insert('product', $update_product);
 			$product_id	= $this->db->insert_id();
