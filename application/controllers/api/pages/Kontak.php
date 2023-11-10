@@ -22,7 +22,7 @@ class Kontak extends REST_Controller
 		// get kontak
 		$this->db->select('*');
 		$this->db->from('companies');
-		$this->db->where(['deleted_at'=>null]);
+		$this->db->where(['deleted_at'=>null,'hq'=>0]);
 		$this->db->order_by('id', 'ASC');
 		$query_companies	= $this->db->get();
 
