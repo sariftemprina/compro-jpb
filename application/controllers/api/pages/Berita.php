@@ -132,7 +132,8 @@ class Berita extends REST_Controller
 				'date' => date('d M Y', strtotime($berita_row->created_at)),
 				'desc' => $berita_row->description,
 				'category' => $berita_row->category,
-				'author' => $berita_row->author,
+				'author' => $berita_row->author,				
+				'meta_description' => substr(strip_tags($berita_row->description), 0, 150),
 			];
 
 			// get berita lain (kecuali yg ditampilkan)

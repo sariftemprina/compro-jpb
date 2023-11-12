@@ -54,7 +54,7 @@
 				<label for="" class="form-label">Kategori</label>
 				<select class="form-control form-control-sm" name="category">
 				<?php
-					$category	= ['Guru', 'SD', 'SMP', 'SMA', 'Umum'];
+					$category	= ['guru', 'sd', 'smp', 'sma', 'umum'];
 					foreach($category as $v){
 						echo "<option value='{$v}'>{$v}</option>";
 					}
