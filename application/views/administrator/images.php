@@ -32,6 +32,7 @@
 				<select class="form-control form-control-sm" name="input-type">
 					<option value="slide">Slide</option>
 					<option value="kategori">Kategori</option>
+					<option value="partner">Partner</option>
 				</select>
 			</div>
         </div>
@@ -44,6 +45,9 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="kategori" data-bs-toggle="tab" data-bs-target="#kategori-tab-pane" type="button" role="tab" aria-controls="kategori-tab-pane" aria-selected="false">Kategori</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="partner" data-bs-toggle="tab" data-bs-target="#partner-tab-pane" type="button" role="tab" aria-controls="partner-tab-pane" aria-selected="false">Partner</button>
             </li>
         </ul>
         <div class="tab-content mt-3" id="myTabContent">

@@ -222,8 +222,8 @@
 																alt="Image Description">
 														</div>
 														<div class="flex-grow-1 ms-3">
-															<h5 class="mb-0">Mark Williams</h5>
-															<p class="card-text text-body">mark@site.com</p>
+															<h5 class="mb-0"><?php echo $this->session->userdata('username'); ?></h5>
+															<p class="card-text text-body"><?php echo $this->session->userdata('email'); ?></p>
 														</div>
 													</div>
 												</div>
