@@ -1112,6 +1112,78 @@ class Administrator extends CI_Controller {
 
 	}
 
+	public function testimonial()
+	{
+
+		if($this->input->get('get') == 'data'){
+
+			$query	= $this->db->where('deleted_at',null)->get('testimonial');			
+			echo json_encode(['status' => true, 'result' => $query->result_array()]);
+			return false;
+
+		}
+
+		if($this->input->get('do') == 'delete'){
+			$this->form_validation->set_rules('id', 'ID', 'required');
+			if($this->form_validation->run() == false){
+				echo json_encode(['status' => false, 'msg' => validation_errors()]);
+				return false;
+			}
+
+			$this->db->update('testimonial', ['deleted_at' => date('Y-m-d H:i:s')], ['id' => $this->input->post('id')]);
+			echo json_encode(['status' => true, 'msg' => 'berhasil menghapus']);
+			return false;
+		}
+		
+		if($this->input->get('do') == 'submit'){
+			$this->form_validation->set_rules('name', 'Nama', 'required');
+			$this->form_validation->set_rules('company', 'Institusi', 'required');
+			$this->form_validation->set_rules('content', 'Testimonial', 'required');
+
+			if($this->form_validation->run() == false){
+				echo json_encode(['status' => false, 'msg' => validation_errors()]);
+				return false;
+			}
+
+			$insert_testi['name']	= $this->input->post('name');
+			$insert_testi['company']		= $this->input->post('company');
+			$insert_testi['content']	= $this->input->post('content');
+			$insert_testi['star']	= $this->input->post('star');
+
+			if($this->input->post('imgbase64') != ""){
+				$img	= $this->images_model->decodeBase64($this->input->post('imgbase64'));
+				if($img['status'] == false){
+					echo json_encode($img);
+					return false;
+				}
+				$filename = _uniqid(50);
+				$filepath = "files/upload/{$filename}.{$img['type']}";
+				file_put_contents($filepath, $img['images']);
+				
+				$config['image_library'] 	= 'gd2';
+				$config['source_image'] 	= $filepath;
+				$config['maintain_ratio'] 	= TRUE;
+				$config['width']         	= 1024;
+				$config['height']       	= 1024;
+				$this->image_lib->initialize($config);
+				$this->image_lib->resize();
+
+				$insert_testi['photo']	= $filepath;
+			}
+
+			$this->db->insert('testimonial', $insert_testi);
+
+			echo json_encode(['status' => true, 'msg' => 'berhasil menambah testimonial']);
+			return false;
+		}
+
+		$data['breadcrumb'][]	= ['text' => '<i class="bi-house-door"></i>', 'url' => base_url()];
+		$data['breadcrumb'][]	= ['text' => 'Menu Setting', 'url' => base_url('administrator/menu')];
+
+		$data['title']			= "Testimonial";
+		$data['content']		= "administrator/testimonial";
+		$this->load->view('administrator/index', $data);
+	}
 
 
 }

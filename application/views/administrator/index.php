@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- Title -->
-	<title>Users | Front - Admin &amp; Dashboard Template</title>
+	<title>JPBooks Admin Panel</title>
 
 	<!-- Favicon -->
 	<link rel="shortcut icon" href="favicon.ico">
@@ -317,8 +317,8 @@
 								</li>
 
                                 <li class="nav-item">
-									<a class="nav-link" href="<?php echo base_url('administrator/menu'); ?>" data-placement="left">
-										<i class="bi-list dropdown-item-icon"></i> Menu Setting
+									<a class="nav-link" href="<?php echo base_url('administrator/testimonial'); ?>" data-placement="left">
+										<i class="bi-list dropdown-item-icon"></i> Testimonial
 									</a>
 								</li>
 
