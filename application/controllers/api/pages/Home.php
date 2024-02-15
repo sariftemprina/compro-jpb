@@ -61,7 +61,7 @@ class Home extends REST_Controller
 		$nasplus = [
 			'title' => $contains['%nasionalplustitle%'],
 			'description' => $contains['%nasionalpluscontent%'],
-			'youtube' => $contains['%nasionalplusyoutube%'],
+			'youtube' => $contains['%nasionalplusyt%'],
 		];
 
 
