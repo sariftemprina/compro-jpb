@@ -13,7 +13,7 @@ class Main extends CI_Controller {
 
 
         //$this->load->view('login');
-        include('./dcp/index.html');
+        include('./jpb/index.html');
     }
 
     public function login()
