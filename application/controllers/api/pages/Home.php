@@ -30,76 +30,39 @@ class Home extends REST_Controller
 			$slides[] = ['image'=>base_url().$slide['filepath']];
 		}
 
-		
+
 		// get kategori
 		$this->db->select('*');
 		$this->db->from('images');
 		$this->db->where(['deleted_at'=>null, 'type'=>'kategori']);
-		$this->db->where_in('title', ['guru','sd','smp','sma','umum']);
-		$query_kategori	= $this->db->get();
+		$this->db->where_in('title', ['internasional','nasional_plus','nasional','umum']);
+		$query_tags	= $this->db->get();
 
-		$kategoris = $lists = $featured = [];
-		$col = ['sd'=>6,'smp'=>5,'sma'=>5,'umum'=>6];
-		foreach ($query_kategori->result() as $kategori) {
-			if($kategori->title=='guru'){
-				$featured[] = [
-					'col' => 3,
-					'image' => base_url().$kategori->filepath,
-					'slug' => $kategori->title
-				];
-			}else{
-				$lists[] = [
-					'col' => $col[$kategori->title],
-					'image' => base_url().$kategori->filepath,
-					'slug' => $kategori->title
-				];
-			}
-
-			$kategoris['featured'] = $featured;
-			$kategoris['lists'] = $lists;
+		$tags = [];
+		foreach ($query_tags->result() as $tag) {
+			$tags[] = [
+				'image' => base_url().$tag->filepath,
+				'slug' => $tag->title
+			];
 		}
 
+
+		// get nasional plus
+		$this->db->select('*');
+		$this->db->from('contains');
+		$this->db->where(['contains.deleted_at' => null]);
+		$query_nasplus	= $this->db->get();
+
+		$contains = [];
+		foreach ($query_nasplus->result_array() as $_contains) {
+			$contains[$_contains['code']] = $_contains['value'];
+		}
 		
-		// get produk terbaru
-		$this->db->select('p.id, p.title, p.price, p.category, i.filepath');
-		$this->db->from('product p');
-		$this->db->join('(SELECT product_id, MIN(image_id) as image_id FROM product_images WHERE deleted_at IS NULL GROUP BY product_id) pi', 'p.id = pi.product_id', 'left');
-		$this->db->join('images i', 'pi.image_id = i.id', 'left');
-		$this->db->where(['p.deleted_at' => null, 'published' => 1 ]);
-		$this->db->order_by('p.id', 'DESC');
-		$this->db->limit(12);
-		$query_products	= $this->db->get();
-
-		$products = [];
-		foreach ($query_products->result() as $product) {
-			$products[] = [
-				'id' => $product->id,
-				'title' => $product->title,
-				'category' => $product->category,
-				'image' => base_url().$product->filepath,
-				'price' => "Rp. " . number_format($product->price,0,',','.'),
-			];
-		}
-
-		// get produk populer
-		$this->db->select('p.id, p.title, p.price, p.category, i.filepath');
-		$this->db->from('product p');
-		$this->db->join('(SELECT product_id, MIN(image_id) as image_id FROM product_images WHERE deleted_at IS NULL GROUP BY product_id) pi', 'p.id = pi.product_id', 'left');
-		$this->db->join('images i', 'pi.image_id = i.id', 'left');
-		$this->db->where(['p.deleted_at' => null, 'published' => 1, 'popular'=>1 ]);
-		$this->db->limit(6);
-		$query_populars	= $this->db->get();
-
-		$populars = [];
-		foreach ($query_populars->result() as $popular) {
-			$populars[] = [
-				'id' => $popular->id,
-				'title' => $popular->title,
-				'category' => $product->category,
-				'image' => base_url().$popular->filepath,
-				'price' => "Rp. " . number_format($popular->price,0,',','.'),
-			];
-		}
+		$nasplus = [
+			'title' => $contains['%nasionalplustitle%'],
+			'description' => $contains['%nasionalpluscontent%'],
+			'youtube' => $contains['%nasionalplusyoutube%'],
+		];
 
 
 		// get news lists
@@ -124,12 +87,31 @@ class Home extends REST_Controller
 		}
 
 
+		// get testimonials
+		$this->db->select('*');
+		$this->db->from('testimonial');
+		$this->db->where(['deleted_at'=>null]);
+		$this->db->limit(5);
+		$query_testimonials	= $this->db->get();
+
+		$testimonials = [];
+		foreach ($query_testimonials->result_array() as $testimonial) {
+			$testimonials[] = [
+				'name' => $testimonial['name'],
+				'company' => $testimonial['company'],
+				'content' => $testimonial['content'],
+				'star' => $testimonial['star'],
+				'image' => !empty($testimonial['photo'])?(base_url().$testimonial['photo']):null,
+			];
+		}
+
+
 		$data = [
 			'slides' => $slides,
-			'kategoris' => $kategoris,
-			'products' => $products,
-			'populars' => $populars,
-			'news' => $news
+			'tags' => $tags,
+			'nasplus' => $nasplus,
+			'news' => $news,
+			'testimonials' => $testimonials
 		];
 
 		$response = [
