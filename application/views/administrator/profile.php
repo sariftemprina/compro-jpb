@@ -7,6 +7,7 @@
 				<button class="nav-link" id="v-pills-company-tab" data-bs-toggle="pill" data-bs-target="#v-pills-company" type="button" role="tab" aria-controls="v-pills-company" aria-selected="false">Kontak dan Lokasi</button>
 				<button class="nav-link" id="v-pills-tim-tab" data-bs-toggle="pill" data-bs-target="#v-pills-tim" type="button" role="tab" aria-controls="v-pills-tim" aria-selected="false">Susunan Organisasi</button>
 				<button class="nav-link" id="v-pills-partner-tab" data-bs-toggle="pill" data-bs-target="#v-pills-partner" type="button" role="tab" aria-controls="v-pills-partner" aria-selected="false">Partnership</button>
+				<button class="nav-link" id="v-pills-natplus-tab" data-bs-toggle="pill" data-bs-target="#v-pills-natplus" type="button" role="tab" aria-controls="v-pills-natplus" aria-selected="false">Nasional Plus</button>
 			</div>
 			<div class="tab-content w-100" id="v-pills-tabContent">
 				<div class="tab-pane fade show w-100 active" id="v-pills-site" role="tabpanel" aria-labelledby="v-pills-site-tab" tabindex="0">
@@ -344,7 +345,7 @@
 								<?php
 									}
 								?>
-								<div class="col-md-row">
+								<div class="row">
 									<div class="col-md-4">
 										<div class="card">
 											<div class="row">
@@ -357,6 +358,55 @@
 													</div>
 													<input type="file" class="img-file" name="img-file" style="position:absolute;top:0px;left:0;width:100%;height:100%;opacity:0;z-index:9">
 													<input type="hidden" class="img-base64 d-non" name="img-base64-partnership">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="tab-pane fade show w-100" id="v-pills-natplus" role="tabpanel" aria-labelledby="v-pills-natplus-tab" tabindex="0">
+					<form id="natplus">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="mb-3">
+									<label for="" class="form-label">Judul</label>
+									<input type="text" class="form-control form-control-sm" name="nasionalplustitle" id="nasionalplustitle">
+								</div>
+								<div class="mb-3">
+									<label for="" class="form-label">Sub Judul</label>
+									<input type="text" class="form-control form-control-sm" name="nasionalplussub" id="nasionalplussub">
+								</div>
+								<div class="mb-3">
+									<label for="" class="form-label">Deskripsi</label>
+									<textarea class="tiny form-control form-control-sm" name="nasionalpluscontent" id="nasionalpluscontent"></textarea>
+								</div>
+								<button class="btn btn-sm btn-primary btn-submit" type="button">Simpan Profile NasinalPlus</button>
+							</div>
+							<div class="col-md-6">
+								<div class="mb-3">
+										<label for="" class="form-label">URL Compro Youtube</label>
+										<input type="text" class="form-control form-control-sm" name="nasionalplusyt" id="nasionalplusyt">
+									</div>
+									<div class="mb-3">
+										<label for="" class="form-label">Image</label>
+										<div class="row">
+											<div class="col-md-4">
+												<div class="card">
+													<div class="row">
+														<div class="col-md-12 border-black">
+															<div class="image-holder text-center" id="nasionalplusimg" style="overflow:hidden;height:150px;width:100%;object-fit: cover;">
+																<div class="pt-3">
+																	<p class="m-0 p-0"><i style="font-size:50px" class="bi bi-camera"></i></p>
+																	<span class="m-0 p-0">Add Image / Drop Here </span>
+																</div>
+															</div>
+															<input type="file" class="img-file" name="img-file" style="position:absolute;top:0px;left:0;width:100%;height:100%;opacity:0;z-index:9">
+															<input type="hidden" class="img-base64 d-non" name="img-base64-natplus">
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
@@ -461,6 +511,19 @@
 					if(v.code == '%partnershipimg%'){
 						let img = `<img src="<?php echo base_url(); ?>${v.value}" class="w-100">`;
 						$("#partnershipimg.image-holder").html(img);
+					}
+
+					if($('textarea#' + (v.code).replace(/\%/g, '')).hasClass('tiny')){
+						tinymce.get((v.code).replace(/\%/g, '')).setContent(v.value); 
+					}
+				});
+
+				$.each(x.result.nasionalplus, function (k,v){
+					$("[name='"+(v.code).replace(/\%/g, '')+"']").val(v.value);
+
+					if(v.code == '%nasionalplusimg%'){
+						let img = `<img src="<?php echo base_url(); ?>${v.value}" class="w-100">`;
+						$("#nasionalplusimg.image-holder").html(img);
 					}
 
 					if($('textarea#' + (v.code).replace(/\%/g, '')).hasClass('tiny')){
@@ -734,6 +797,21 @@
 		param.partnershipcontact	= JSON.stringify(contact);
 
         $.post('?do=save-partnership', param, function(result){
+			var x = JSON.parse(result);
+            msg(x.msg,(x.status == false ? 'danger' : 'primary'));
+			loadData();
+		});
+	});
+
+	$(document).on('click', 'form#natplus .btn-submit', function(e){
+        var param = {}; 
+		param.nasionalplustitle			= $("[name=nasionalplustitle]").val();
+		param.nasionalplussub			= $("[name=nasionalplussub]").val();
+		param.nasionalpluscontent		= tinymce.get("nasionalpluscontent").getContent();
+		param.nasionalplusimg			= $("[name=img-base64-natplus]").val();
+		param.nasionalplusyt			= $("[name=nasionalplusyt]").val();
+
+        $.post('?do=save-nasionalplus', param, function(result){
 			var x = JSON.parse(result);
             msg(x.msg,(x.status == false ? 'danger' : 'primary'));
 			loadData();

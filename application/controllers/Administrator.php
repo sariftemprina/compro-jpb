@@ -168,6 +168,49 @@ class Administrator extends CI_Controller {
 
 	public function profile()
 	{
+		/** nasionalplus */
+		if($this->input->get('do') == 'save-nasionalplus'){
+			$this->form_validation->set_rules('nasionalplustitle', 'Judul', 'required');		
+			$this->form_validation->set_rules('nasionalpluscontent', 'Deskripsi', 'required');		
+
+			if($this->form_validation->run() == false){
+				echo json_encode(['status' => false, 'msg' => validation_errors()]);	
+				return false;			
+			}
+
+			$input = $this->input->post();
+			if($this->input->post('nasionalplusimg') != ""){
+				$img	= $this->images_model->decodeBase64($this->input->post('nasionalplusimg'));
+				if($img['status'] == false){
+					echo json_encode($img);
+					return false;
+				}
+
+				$filepath_profile = "files/upload/img-nasionalplus.jpg";
+				file_put_contents($filepath_profile, $img['images']);
+				
+				$config['image_library'] 	= 'gd2';
+				$config['source_image'] 	= $filepath_profile;
+				$config['maintain_ratio'] 	= TRUE;
+				$config['width']         	= 800;
+				$config['height']       	= 800;
+				$this->image_lib->initialize($config);
+				$this->image_lib->resize();
+				$input['nasionalplusimg'] = $filepath_profile;
+			}else{
+				unset($input['nasionalplusimg']);
+			}
+
+			foreach($input as $k => $v){
+				$where['code']		= "%{$k}%";
+				$where['lang']		= ($this->session->userdata('lang') ?? 'ID');
+				$set['value']		= $v;
+				$this->db->update('contains', $set, $where);
+			}
+			echo json_encode(['status' => true, 'msg' => 'berhasil mengupdate informasi nasionalplus']);
+			return false;
+		}
+
 		/** Partnership */
 		if($this->input->get('do') == 'save-partnership'){
 			$this->form_validation->set_rules('partnershiptitle', 'Judul', 'required');		
@@ -473,6 +516,7 @@ class Administrator extends CI_Controller {
 			$query_site = $this->db->where(['section' => 'site'])->get('contains');
 			$query_profile = $this->db->where(['section' => 'profile'])->get('contains');
 			$query_partnership = $this->db->where(['section' => 'partnership'])->get('contains');
+			$query_nasionalplus = $this->db->where(['section' => 'natplus'])->get('contains');
 
 			/** Person */
 			$query_person = $this->db->where(['deleted_at' => null])->order_by('num')->get('person');
@@ -485,6 +529,7 @@ class Administrator extends CI_Controller {
 			$data['result']['person']		= $query_person->result_array();
 			$data['result']['companies']	= $query_companies->result_array();
 			$data['result']['partnership']	= $query_partnership->result_array();
+			$data['result']['nasionalplus']		= $query_nasionalplus->result_array();
 			$data['status']	= true;
 
 			echo json_encode($data);
