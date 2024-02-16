@@ -34,7 +34,8 @@ class Tentangkami extends REST_Controller
 		$profile = [
 			'title' => 'Profil Perusahaan',
 			'desc' => $contains['%profile%'],
-			'image' => base_url().$contains['%profileimg%']
+			'image' => base_url().$contains['%profileimg%'],
+			'descsub' => $contains['%profilesub%']
 		];
 
 		// get visimisi
@@ -71,10 +72,23 @@ class Tentangkami extends REST_Controller
 		}
 
 
+		// get partner
+		$this->db->select('*');
+		$this->db->from('images');
+		$this->db->where(['deleted_at'=>null, 'type'=>'partner']);
+		$query_partners	= $this->db->get();
+
+		$partners = [];
+		foreach ($query_partners->result_array() as $partner) {
+			$partners[] = ['image'=>base_url().$partner['filepath']];
+		}
+
+
 		$data = [
 			'profile' => $profile,
 			'visimisi' => $visimisi,
-			'persons' => $persons
+			'persons' => $persons,
+			'partners' => $partners
 		];
 
 		$response = [

@@ -1,6 +1,6 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header('Content-Type: application/json; charset=utf-8');
 
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -42,7 +42,14 @@ class Kontak extends REST_Controller
 			];
 		}
 
+		$form = [
+			'image' => base_url().'files/upload/kontak.webp',
+			'title' => 'Masukan Anda Sangat Berarti',
+			'description' => 'Tulis kritik, saran atau pesan Anda kepada kami dan dapatkan informasi seputar program dan pelatihan.'
+		];
+
 		$data = [
+			'form' => $form,
 			'companies' => $companies
 		];
 
@@ -56,5 +63,55 @@ class Kontak extends REST_Controller
 		];
 
 		$this->response($response); 
+	}
+
+
+	public function form_post()
+	{
+		$stream = $this->input->raw_input_stream;
+		$post = json_decode($stream);
+		
+		if(empty($post->nama_lengkap) && empty($post->institusi) && empty($post->jabatan) && empty($post->kota) && empty($post->no_telp) && empty($post->pesan)) {
+
+			$response = [
+				'status'=>'error',
+				'status_message'=>'Query get errors',
+				'data'=> [
+					'message' => 'Harap memasukan semua field. '
+				],
+				'server_time'=>time(),
+				'server_timezone'=>'Asia/Jakarta',
+				'api_version'=>'1.0',
+			];
+		
+		} else {
+
+			$contact['name']		= $post->nama_lengkap;
+			$contact['institutions']	= $post->instansi;
+			$contact['position']	= $post->jabatan;
+			$contact['phone']	= $post->no_telp;
+			$contact['whatsapp']	= $post->no_telp;
+			$contact['city']	= $post->kota;
+			$contact['message']	= $post->pesan;
+
+			$this->db->insert('contact', $contact);
+
+			$data = [
+				'message' => 'Form berhasil disimpan.',
+				'id' => $this->db->insert_id()
+			];
+
+			$response = [
+				'status'=>'success',
+				'status_message'=>'Query was successful',
+				'data'=>$data,
+				'server_time'=>time(),
+				'server_timezone'=>'Asia/Jakarta',
+				'api_version'=>'1.0',
+			];
+
+		}
+
+		$this->response($response);
 	}
 }

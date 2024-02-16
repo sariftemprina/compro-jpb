@@ -20,7 +20,7 @@ class Produk extends REST_Controller
 	public function index_get()
 	{
 		// get produk
-		$this->db->select('p.id, p.title, p.price, p.category, i.filepath');
+		$this->db->select('p.id, p.title, p.price, p.category, p.tags, i.filepath');
 		$this->db->from('product p');
 		$this->db->join('(SELECT product_id, MIN(image_id) as image_id FROM product_images WHERE deleted_at IS NULL GROUP BY product_id) pi', 'p.id = pi.product_id', 'left');
 		$this->db->join('images i', 'pi.image_id = i.id', 'left');
@@ -47,17 +47,85 @@ class Produk extends REST_Controller
 			$this->db->order_by('p.id', 'DESC');
 		}
 
+		if(isset($_GET['label'])){
+			if($_GET['label']!='all'){
+				$this->db->like('tags', '"'.$_GET['label'].'"');
+			}
+		}
+
 		$query_products	= $this->db->get();
 
 		$products = [];
 		foreach ($query_products->result() as $product) {
+
+			$tags = [];
+			$data_tags = json_decode($product->tags);
+			foreach ($data_tags as $tag) {
+				$tags[] = $tag;
+			}
+ 
 			$products[] = [
 				'id' => $product->id,
 				'title' => $product->title,
 				'category' => $product->category,
+				'tags' => $tags,
 				'image' => base_url().$product->filepath,
 				'price' => "Rp. " . number_format($product->price,0,',','.'),
 			];
+		}
+
+		// Label
+		$this->db->select('*');
+		$this->db->from('contains');
+		$this->db->where(['contains.deleted_at' => null, 'code' => '%schooltype%']);
+		$query_tags	= $this->db->get();
+		$row_tags = $query_tags->row();
+
+		$tags = [];
+		foreach (json_decode($row_tags->value) as $key => $tag) {
+			$tags[] = ['code'=>$tag->slug,'name'=>$tag->text];
+		}
+
+		$all = ['code'=>'all','name'=>'Semua'];
+		array_push($tags, $all);
+
+		$tag_lists = [];
+		foreach ($tags as $tag) {
+			// hitung per kategori
+			$this->db->select('*');
+			$this->db->from('product');
+			$this->db->where(['deleted_at'=>null, 'published' => 1]);
+			
+			if($tag['code']!='all'){
+				$this->db->like('tags', '"'.$tag['code'].'"');
+			}
+
+			if(isset($_GET['q'])){
+				if($_GET['q']!=""){
+					$this->db->like('title', $_GET['q']);
+				}
+			}
+
+			if(isset($_GET['kategori'])){
+				if($_GET['kategori']!='all'){
+					$this->db->where(['category' => $_GET['kategori']]);
+				}
+			}
+
+			if(isset($_GET['sort'])){
+				if($_GET['sort']=="populer"){
+					$this->db->where(['popular'=>1]);
+				}
+
+				$this->db->order_by('p.id', 'DESC');
+			}
+
+			$total = $this->db->count_all_results();
+
+			$tag_lists[] = [
+				'code'=>$tag['code'], 'name'=>$tag['name'], 'total'=>$total
+			];
+
 		}
 
 		// kategori
@@ -93,6 +161,12 @@ class Produk extends REST_Controller
 				}
 
 				$this->db->order_by('p.id', 'DESC');
+			}
+
+			if(isset($_GET['label'])){
+				if($_GET['label']!='all'){
+					$this->db->like('tags', '"'.$_GET['label'].'"');
+				}
 			}
 
 			$total = $this->db->count_all_results();
@@ -132,6 +206,12 @@ class Produk extends REST_Controller
 				}
 			}
 
+			if(isset($_GET['label'])){
+				if($_GET['label']!='all'){
+					$this->db->like('tags', '"'.$_GET['label'].'"');
+				}
+			}
+
 			$this->db->order_by('p.id', 'DESC');
 
 			$total = $this->db->count_all_results();
@@ -146,6 +226,7 @@ class Produk extends REST_Controller
 			'products' => $products,
 			'kategori' => $kategori_lists,
 			'filter' => $filter_lists,
+			'tag' => $tag_lists
 		];
 
 		$response = [
@@ -163,7 +244,7 @@ class Produk extends REST_Controller
 
 	public function detil_get()
 	{
-		$this->db->select(["p.id", "p.title", "p.description", "p.created_at", "p.price", "p.category", "i.filepath", "(SELECT GROUP_CONCAT(JSON_OBJECT('name', name, 'value', link)) as value FROM product_stores WHERE product_id = p.id GROUP BY product_id) as link"]);
+		$this->db->select(["p.id", "p.title", "p.description", "p.created_at", "p.price", "p.category", "p.tags", "i.filepath", "(SELECT GROUP_CONCAT(JSON_OBJECT('name', name, 'value', link)) as value FROM product_stores WHERE product_id = p.id GROUP BY product_id) as link"]);
     $this->db->from('product p');
     $this->db->join('(SELECT product_id, MIN(image_id) as image_id FROM product_images WHERE deleted_at IS NULL GROUP BY product_id) pi', 'p.id = pi.product_id', 'left');
     $this->db->join('images i', 'pi.image_id = i.id', 'left');
@@ -195,6 +276,25 @@ class Produk extends REST_Controller
 				];
 			}
 
+			// tags
+			$this->db->select('*');
+			$this->db->from('contains');
+			$this->db->where(['contains.deleted_at' => null, 'code' => '%schooltype%']);
+			$query_tags	= $this->db->get();
+			$row_tags = $query_tags->row();
+
+			$array_tags = [];
+			foreach (json_decode($row_tags->value) as $key => $tag) {
+				$array_tags[$tag->slug] = $tag->text;
+			}
+
+			$data_tags = json_decode($product_row->tags);
+			$tags = "";
+			foreach ($data_tags as $tag) {
+				$tags .= $array_tags[$tag].", ";
+			}
+			$tags = substr($tags, 0, -2);
+
 			$product = [
 				'id' => $product_row->id,
 				'title' => $product_row->title,
@@ -203,6 +303,7 @@ class Produk extends REST_Controller
 				'price' => "Rp " . number_format($product_row->price,0,',','.'),
 				'desc' => $product_row->description,
 				'category' => $product_row->category,
+				'tags' => $tags,
 				'meta_description' => substr(strip_tags($product_row->description), 0, 150),
 				'varian' => [],
 				'marketplace' => $links
