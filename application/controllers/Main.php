@@ -9,11 +9,7 @@ class Main extends CI_Controller {
 
     public function index()
 	{
-		//$this->load->view('index.html');
-
-
-        //$this->load->view('login');
-        include('./jpb/index.html');
+        redirect('/jpb');
     }
 
     public function login()
