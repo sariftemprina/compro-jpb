@@ -322,6 +322,12 @@
 									</a>
 								</li>
 
+								<li class="nav-item">
+									<a class="nav-link" href="<?php echo base_url('administrator/contacts'); ?>" data-placement="left">
+										<i class="bi-list dropdown-item-icon"></i> Contacts
+									</a>
+								</li>
+
                                 <li class="nav-item">
 									<a class="nav-link" href="<?php echo base_url('administrator/user'); ?>" data-placement="left">
 										<i class="bi-people dropdown-item-icon"></i> User Setting
