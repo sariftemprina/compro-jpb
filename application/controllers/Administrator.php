@@ -1113,6 +1113,7 @@ class Administrator extends CI_Controller {
 			$title		= $this->input->post('title');
 			$img		= $this->input->post('img');
 			$caption	= $this->input->post('caption');
+			$url	= $this->input->post('url');
 			$type	= $this->input->post('type');
 
 			if($img == ""){
@@ -1142,7 +1143,7 @@ class Administrator extends CI_Controller {
 			$this->image_lib->initialize($config);
 			$this->image_lib->resize();
 
-			$this->db->insert('images', ['title' => $title, 'filepath' => $filepath, 'caption' => $caption, 'type' => $type]);
+			$this->db->insert('images', ['title' => $title, 'filepath' => $filepath, 'caption' => $caption, 'type' => $type, 'url' => $url]);
 
 			$data		= ['status' => true, 'location' => $filepath, 'msg' => 'berhasil menambah gambar'];
 			echo json_encode($data);

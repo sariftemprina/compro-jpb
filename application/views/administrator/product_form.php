@@ -73,7 +73,7 @@
 			<label for="basic-url" class="form-label">Link pembelian</label>
 
 			<?php
-				$mktplace	= ['tokopedia', 'blibli', 'shopee', 'bukalapak'];
+				$mktplace	= ['tokopedia', 'blibli', 'shopee', 'bukalapak', 'tiktok Shop'];
 				foreach($mktplace as $v){
 			?>
 			<div class="input-group mt-2">

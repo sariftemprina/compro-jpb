@@ -27,7 +27,13 @@
             Pastikan ukuran gambar tidak melebihi 2048px atau lebih dari 4mb
         </div>                    
         <div class="mb-3">
-            <div class="col-md-6">
+            <div class="col-md-12">
+				<label for="" class="form-label">URL</label>
+                <input type="text" class="form-control form-control-sm" name="input-url" id="">
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="col-md-12">
 				<label for="" class="form-label">Jenis</label>
 				<select class="form-control form-control-sm" name="input-type">
 					<option value="slide">Slide</option>
@@ -112,8 +118,9 @@
         var img = $('[name=img-base64]').val();
         var caption = $('[name=img-caption]').val();
         var type = $('[name=input-type]').val();
+        var url = $('[name=input-url]').val();
 
-        $.post('<?php echo base_url(); ?>administrator/images?do=upload', {'img':  img, 'caption' : caption, 'title' : title, 'type' : type}, function(result){
+        $.post('<?php echo base_url(); ?>administrator/images?do=upload', {'img':  img, 'caption' : caption, 'title' : title, 'type' : type, 'url' : url}, function(result){
             var x = JSON.parse(result);
             msg(x.msg,(x.status == false ? 'danger' : 'primary'));
             loadData();
